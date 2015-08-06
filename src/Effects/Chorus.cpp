@@ -200,7 +200,7 @@ void Chorus::setpreset(unsigned char npreset)
 }
 
 
-void Chorus::changepar(int npar, unsigned char value)
+void Chorus::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -248,7 +248,7 @@ void Chorus::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Chorus::getpar(int npar)
+float Chorus::getpar(int npar)
 {
     switch (npar)
     {

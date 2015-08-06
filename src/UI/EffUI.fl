@@ -222,7 +222,11 @@ class EffUI {open : {public Fl_Group,public PresetsUI_, public ControllableByMID
     synth = NULL;} {}
   }
   Function {~EffUI()} {} {
-    code {effnullwindow->hide();        // delete (effnullwindow);
+    code {
+        std::cout << "EffUI unassignUIControls" << endl;
+        unassignUIControls();
+
+        effnullwindow->hide();        // delete (effnullwindow);
         effreverbwindow->hide();        // delete (effreverbwindow);
         effechowindow->hide();          // delete (effechowindow);
         effchoruswindow->hide();        // delete (effchoruswindow);
@@ -236,7 +240,9 @@ class EffUI {open : {public Fl_Group,public PresetsUI_, public ControllableByMID
         {
             filterwindow->hide();
             delete(filterwindow);
-        }} {}
+        }
+        std::cout << "EffUI totally deleted." << endl;
+        } {}
   }
   Function {make_null_window()} {} {
     Fl_Window effnullwindow {open
@@ -322,7 +328,7 @@ class EffUI {open : {public Fl_Group,public PresetsUI_, public ControllableByMID
       Fl_Choice revp10 {
         label Type
         callback {eff->changepar(Reverb::c_Ptype, o->value());
-if (eff->getparFloat(Reverb::c_Ptype)==2) revp12->activate();
+if (eff->getpar(Reverb::c_Ptype)==2) revp12->activate();
 else revp12->deactivate();} open
         xywh {240 13 75 15} down_box BORDER_BOX color 14 labelsize 11 textsize 11 textcolor 7
         class WidgetPChoice
@@ -1718,36 +1724,44 @@ refresh(eff);}
   } {
     code {eff=eff_;
     synth = _synth;
-controller = eff->getefx();
-make_null_window();
-make_reverb_window();
-make_echo_window();
-make_chorus_window();
-make_phaser_window();
-make_alienwah_window();
-make_distorsion_window();
-make_eq_window();
-make_dynamicfilter_window();
+    //setController(eff->getefx());
+    std::cout << "EnvelopeUI reassignMidi" << endl;
+    reassignMidi(eff);
+    make_null_window();
+    make_reverb_window();
+    make_echo_window();
+    make_chorus_window();
+    make_phaser_window();
+    make_alienwah_window();
+    make_distorsion_window();
+    make_eq_window();
+    make_dynamicfilter_window();
 
-int px=this->parent()->x();
-int py=this->parent()->y();
+    int px=this->parent()->x();
+    int py=this->parent()->y();
 
-effnullwindow->position(px,py);
-effreverbwindow->position(px,py);
-effechowindow->position(px,py);
-effchoruswindow->position(px,py);
-effphaserwindow->position(px,py);
-effalienwahwindow->position(px,py);
-effdistorsionwindow->position(px,py);
-effeqwindow->position(px,py);
-effdynamicfilterwindow->position(px,py);
+    effnullwindow->position(px,py);
+    effreverbwindow->position(px,py);
+    effechowindow->position(px,py);
+    effchoruswindow->position(px,py);
+    effphaserwindow->position(px,py);
+    effalienwahwindow->position(px,py);
+    effdistorsionwindow->position(px,py);
+    effeqwindow->position(px,py);
+    effdynamicfilterwindow->position(px,py);
 
-refresh(eff);} {}
+    refresh(eff);} {}
   }
   Function {refresh(EffectMgr *eff_)} {open
   } {
-    code {eff = eff_;
+    code {
+        if(eff != eff_){
+          unassignUIControls();
+          reassignMidi(eff);
+        }
+        eff = eff_;
         this->hide();
+        
         effnullwindow->hide();
         effreverbwindow->hide();
         effechowindow->hide();

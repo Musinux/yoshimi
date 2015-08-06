@@ -46,14 +46,9 @@ class Alienwah : public Effect
         void out(float *smpsl, float *smpsr);
 
         void setpreset(unsigned char npreset);
-        void changepar(int npar, unsigned char value);
-        unsigned char getpar(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
         void cleanup(void);
-
-        // Control Parameters
-        /*void changepar(int npar, double value){ changepar(npar, (unsigned char)value);}
-        unsigned char getparChar(int npar){ return getpar(npar);}
-        float getparFloat(int npar){ return (float)getpar(npar);}*/
 
         enum {
             c_Pvolume,

@@ -40,8 +40,8 @@ class Phaser : public Effect
         ~Phaser();
         void out(float *smpsl, float *smpsr);
         void setpreset(unsigned char npreset);
-        void changepar(int npar, unsigned char value);
-        unsigned char getpar(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
         void cleanup(void);
         void setdryonly(void);
 

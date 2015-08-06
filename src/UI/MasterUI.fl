@@ -95,6 +95,8 @@ class MasterUI {selected : {private MiscFuncs, public ControllableByMIDIUI}
   Function {MasterUI(SynthEngine *_synth)} {} {
     code {//
       synth = _synth;
+      std::cout << "MasterUI reassignMidi" << endl;
+      reassignMidi(_synth);
       presetsui = NULL;
       ninseff = 0;
       nsyseff = 0;
@@ -113,7 +115,9 @@ class MasterUI {selected : {private MiscFuncs, public ControllableByMIDIUI}
       laststatefile = synth->getRuntime().StateFile;} {}
   }
   Function {~MasterUI()} {} {
-    code {//
+    code {
+      std::cout << "MasterUI unassignUIControls" << endl;
+      unassignUIControls();
       masterwindow->hide();
       aboutwindow->hide();
       delete aboutwindow;
@@ -164,7 +168,7 @@ class MasterUI {selected : {private MiscFuncs, public ControllableByMIDIUI}
       bankui = new BankUI(&npart, synth);
       virkeyboard = new VirKeyboard(synth);
       configui = new ConfigUI(synth);
-      midiccwindow = new MidiCCWindow(masterwindow->x()+100,masterwindow->y()+50,316,400, synth, "Midi Controllers");
+      midiccwindow = new MidiCCWindow(masterwindow->x()+100,masterwindow->y()+50,316,800, synth, "Midi Controllers");
       synth->setMidiCCWindow(midiccwindow);
       presetsui = new PresetsUI(synth);
       paramsui = new ParametersUI(synth);
@@ -782,10 +786,14 @@ mainCreateNewInstance(forceId);}
       Fl_Spinner npartcounter {
         label Part
         callback {//
+          // << "doing npartcounter" << endl;
           int nval = o->value() - 1;
           partuigroup->remove(partui);
+
           delete partui;
+          // << "deleting partui" << endl;
           partui = new PartUI(0, 0, 765, 525);
+          // << "after new PartUI" << endl;
           partuigroup->add(partui);
           partui->init(synth->part[nval], nval, bankui);
           partui->redraw();
@@ -1135,9 +1143,12 @@ updatepanel();}
         }
         int result = synth->loadParameters(fname);
         checkmaxparts();
+        // << "checkmaxparts done" << endl;
         setinspartlist();
+        // << "setinspartlist done" << endl;
         npartcounter->value(1);
         refresh_master_ui();
+        // << "refresh_master_ui done" << endl;
         if (result >= 0) // shouldn't this be just > ?
         {
             if (updatehistory)
@@ -1156,7 +1167,9 @@ updatepanel();}
             }
             else
                 fl_alert("%s",msg.c_str());
-        }} {}
+        }
+        // << "everything done" << endl;
+        } {}
   }
   Function {do_save_master(const char* file = NULL)} {} {
     code {//
@@ -1191,18 +1204,28 @@ updatepanel();}
   }
   Function {refresh_master_ui()} {} {
     code {//
+        // << "doing refresh_master_ui" << endl;
         ninseff = 0;
         nsyseff = 0;
         npart = 0;
         npartcounter->do_callback();
+        // << "after 1" << endl;
         syseffnocounter->do_callback();
+        // << "after 2" << endl;
         inseffnocounter->do_callback();
+        // << "after 3" << endl;
         masterkeyshift->value(synth->Pkeyshift - 64);
+        // << "after 4" << endl;
         mastervolumedial->value(synth->Pvolume);
+        // << "after 5" << endl;
         globalfinedetune->value(synth->microtonal.Pglobalfinedetune);
+        // << "after 6" << endl;
         microtonalui = new MicrotonalUI(&synth->microtonal);
+        // << "before updatesendwindow" << endl;
         updatesendwindow();
+        // << "before updatepanel" << endl;
         updatepanel();
+        // << "after updatepanel" << endl;
         bankui->Hide();} {}
   }
   Function {checkmaxparts()} {private

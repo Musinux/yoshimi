@@ -37,11 +37,6 @@ using namespace std;
 #include "Misc/Microtonal.h"
 #include "Misc/Bank.h"
 #include "Misc/SynthHelper.h"
-#include "Params/ControllableByMIDI.h"
-#include "WidgetPDialUI.h"
-#include "MidiControllerUI.h"
-#include <FL/Fl_Valuator.H>
-#include <list>
 
 #include "Misc/Config.h"
 #include "Params/PresetsStore.h"
@@ -140,15 +135,14 @@ class SynthEngine : private SynthHelper, MiscFuncs, public ControllableByMIDI
 
         list<midiControl*> midiControls;
 
+    public:
         void addMidiControl(ControllableByMIDI *ctrl, int par, ControllableByMIDIUI *ui);
-        void addMidiControl(midiControl *midiCtrl);
+        void addMidiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par, bool recording);
         void removeMidiControl(midiControl *midiCtrl);
         void removeAllMidiControls();
 
-        unsigned char getpar(int npar);
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar){ return getpar(npar);}
-        float getparFloat(int npar){ return (float)getpar(npar);}
+        float getpar(int npar);
+        void changepar(int npar, float value);
 
         // effects
         EffectMgr *sysefx[NUM_SYS_EFX]; // system
@@ -232,6 +226,7 @@ class SynthEngine : private SynthHelper, MiscFuncs, public ControllableByMIDI
         int LFOtime; // used by Pcontinous
         string windowTitle;
         MusicClient *musicClient;
+        bool alreadyDeletingMidiControls;
 };
 
 inline float SynthEngine::numRandom(void)

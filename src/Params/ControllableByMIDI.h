@@ -24,7 +24,6 @@
 #ifndef CONTROLLABLEBYMYDI_H
 #define CONTROLLABLEBYMYDI_H
 
-#include <iostream>
 #include <list>
 
 using namespace std;
@@ -44,27 +43,29 @@ struct midiControl {
     ControllableByMIDIUI *ui;
     int par;
     bool recording;
-    bool isFloat;
+    //bool isFloat;
 
-    midiControl(): controller(NULL), ui(NULL) {}
-    midiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par, int isFloat): ccNbr(ccNbr), channel(channel), min(min), max(max), controller(controller), ui(ui), par(par), isFloat(isFloat), recording(false) {}
-    midiControl(ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par, int isFloat): ccNbr(-1), channel(-1), min(0), max(127), controller(controller), ui(ui), par(par), isFloat(isFloat), recording(true) {}
+private:
+    midiControl(): controller(0), ui(0) {}
+public:
+    midiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par,  bool recording);
+    midiControl(ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par);
     ~midiControl();
+    void init();
     void changepar(int value);
     float getpar();
+    void removeUI();
 };
 
 class ControllableByMIDI
 {
 public:
-    virtual void changepar(int npar, double value) = 0;
-    virtual unsigned char getparChar(int npar) = 0;
-    virtual float getparFloat(int npar) = 0;
+    virtual void changepar(int npar, float value) = 0;
+    virtual float getpar(int npar) = 0;
 
     /**
-    void changepar(int npar, double value);
-    unsigned char getparChar(int npar);
-    float getparFloat(int npar);
+    void changepar(int npar, float value);
+    float getpar(int npar);
     **/
 
     void reassignUIControls(ControllableByMIDIUI *ctrl);
@@ -78,11 +79,11 @@ public:
     void add2XMLMidi(XMLwrapper *xml);
     void getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth);
 
-    ControllableByMIDI(): isControlled(false) {}
-    ~ControllableByMIDI(){}
+    ControllableByMIDI(): alreadyDeleting(false) {}
+    virtual ~ControllableByMIDI(){alreadyDeleting = true;}
 private:
     list<midiControl*> controllers;
-    bool isControlled;
+    bool alreadyDeleting;
 };
 
 

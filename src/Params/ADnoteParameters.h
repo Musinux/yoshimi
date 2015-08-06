@@ -28,7 +28,7 @@
 #include "Params/EnvelopeParams.h"
 #include "Params/LFOParams.h"
 #include "Params/FilterParams.h"
-#include "Params/ControllableByMIDI.h"
+//#include "Params/ControllableByMIDI.h"
 #include "Synth/OscilGen.h"
 #include "Synth/Resonance.h"
 #include "Misc/XMLwrapper.h"
@@ -45,13 +45,14 @@ class SynthEngine;
 /*                    GLOBAL PARAMETERS                          */
 /*****************************************************************/
 
-struct ADnoteGlobalParam : public ControllableByMIDI {
+struct ADnoteGlobalParam //: public ControllableByMIDI 
+{
     bool PStereo;
 
-    void changepar(int npar, double value){}
-    unsigned char getparChar(int npar){ return 1;}
-    float getparFloat(int npar){ return 1;}
-
+    /*
+    void changepar(int npar, float value){}
+    float getpar(int npar){ return 1;}
+    */
     // Frequency global parameters
     unsigned short int PDetune;       // fine detune
     unsigned short int PCoarseDetune; // coarse detune + octave
@@ -176,7 +177,7 @@ struct ADnoteVoiceParam { // Voice parameters
 };
 
 
-class ADnoteParameters : public Presets, public ControllableByMIDI
+class ADnoteParameters : public Presets//, public ControllableByMIDI
 {
     public:
         ADnoteParameters(FFTwrapper *fft_, SynthEngine *_synth);
@@ -193,10 +194,10 @@ class ADnoteParameters : public Presets, public ControllableByMIDI
         ADnoteGlobalParam GlobalPar;
         ADnoteVoiceParam VoicePar[NUM_VOICES];
         static int ADnote_unison_sizes[15];
-
-        void changepar(int npar, double value){}
-        unsigned char getparChar(int npar){ return 1;}
-        float getparFloat(int npar){ return 1;}
+        /*
+        void changepar(int npar, float value){}
+        float getpar(int npar){ return 1;}
+        */
     private:
         void defaults(int n); // n is the nvoice
         void enableVoice(int nvoice);

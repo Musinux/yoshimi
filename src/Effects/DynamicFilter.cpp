@@ -260,7 +260,7 @@ void DynamicFilter::setpreset(unsigned char npreset)
 }
 
 
-void DynamicFilter::changepar(int npar, unsigned char value)
+void DynamicFilter::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -303,7 +303,7 @@ void DynamicFilter::changepar(int npar, unsigned char value)
     }
 }
 
-unsigned char DynamicFilter::getpar(int npar)
+float DynamicFilter::getpar(int npar)
 {
     switch (npar)
     {

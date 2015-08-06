@@ -34,6 +34,9 @@ This file is a derivative of the ZynAddSubFX original, modified October 2009
 decl {\#include "WidgetPDialUI.h"} {public local
 } 
 
+decl {\#include "WidgetPChoiceUI.h"} {public local
+} 
+
 decl {\#include "Misc/ControllableByMIDIUI.h"} {public local
 } 
 
@@ -69,7 +72,10 @@ class LFOUI {open : {public Fl_Group, PresetsUI_, ControllableByMIDIUI}
 pars=NULL;} {}
   }
   Function {~LFOUI()} {} {
-    code {lfoui->hide();
+    code {
+    std::cout << "LFOUI unassignUIControls" << endl;
+    unassignUIControls();
+    lfoui->hide();
 hide();} {}
   }
   Function {make_window()} {open
@@ -86,11 +92,7 @@ hide();} {}
           label {Freq.}
           callback {pars->changepar(LFOParams::c_Pfreq, o->value()*127);}
           tooltip {LFO Frequency} xywh {5 20 30 30} box ROUND_UP_BOX labelsize 10 step 1e-05
-          code {o->synth=synth;
-            o->controllable = true;
-            o->midiCtrl = pars; 
-            o->par = LFOParams::c_Pfreq;
-            o->ui = this;}
+          code {o->initMidiControl(synth,pars,LFOParams::c_Pfreq, this);}
           class WidgetPDial
         }
         Fl_Dial intensity {
@@ -142,6 +144,12 @@ hide();} {}
           label Type
           callback {pars->changepar(LFOParams::c_PLFOtype, o->value());}
           tooltip {LFO function} xywh {180 40 45 15} down_box BORDER_BOX labelsize 10 align 2 textsize 8
+          code {o->synth=synth;
+            o->controllable = true;
+            o->midiCtrl = pars; 
+            o->par = LFOParams::c_PLFOtype;
+            o->ui = this;}
+          class WidgetPChoice
         } {
           MenuItem {} {
             label SINE
@@ -227,6 +235,7 @@ LFOtype->value(pars->PLFOtype);} {}
   } {
     code {pars=lfopars_;
     synth = pars->getSynthEngine();
+    std::cout << "LFOUI reassignMidi" << endl;
     reassignMidi(lfopars_);
     make_window();
     end();

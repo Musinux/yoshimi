@@ -37,9 +37,8 @@ class LFO: public ControllableByMIDI
         ~LFO();
         float lfoout(void);
         float amplfoout(void);
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar){ return 0;};
-        float getparFloat(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
 
         enum {
             c_Pfreq,
@@ -64,9 +63,9 @@ class LFO: public ControllableByMIDI
         float lfodelay;
         char lfotype;
         int freqrndenabled;
-        float basefreq;
 
         LFOParams *lfopars;
+        float basefreq;
         SynthEngine *synth;
 };
 

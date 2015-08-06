@@ -103,7 +103,7 @@ void EQ::setpreset(unsigned char npreset)
 }
 
 
-void EQ::changepar(int npar, unsigned char value)
+void EQ::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -160,7 +160,7 @@ void EQ::changepar(int npar, unsigned char value)
     }
 }
 
-unsigned char EQ::getpar(int npar)
+float EQ::getpar(int npar)
 {
     switch (npar)
     {

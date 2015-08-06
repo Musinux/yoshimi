@@ -218,7 +218,10 @@ pars=NULL;
         nseqpos = 0;} {}
   }
   Function {~FilterUI()} {} {
-    code {filterui->hide();
+    code {
+        std::cout << "FilterUI unassignUIControls" << endl;
+        unassignUIControls();
+        filterui->hide();
         formantparswindow->hide();
         hide();
         // delete (filterui);
@@ -237,7 +240,7 @@ pars=NULL;
           label FilterType
           callback {pars->changepar(FilterParams::c_Ptype,o->value()); pars->changed=true;}
           tooltip {The Filter type} xywh {10 50 50 15} down_box BORDER_BOX labelsize 10 align 5 textsize 10
-          code1 {o->value(pars->getparFloat(FilterParams::c_Ptype));}
+          code1 {o->value(pars->getpar(FilterParams::c_Ptype));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -286,7 +289,7 @@ pars=NULL;
           label FilterType
           callback {pars->changepar(FilterParams::c_Ptype,o->value()); pars->changed=true;}
           tooltip {The Filter type} xywh {10 50 50 15} down_box BORDER_BOX labelsize 10 align 5 textsize 10
-          code1 {o->value(pars->getparFloat(FilterParams::c_Ptype));}
+          code1 {o->value(pars->getpar(FilterParams::c_Ptype));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -315,7 +318,7 @@ pars=NULL;
           label Category
           callback {switchcategory((int)o->value()); pars->changed=true;}
           tooltip {The Category of the Filter (Analog/Formantic/etc.)} xywh {10 20 60 15} down_box BORDER_BOX labelsize 10 align 5 textsize 10
-          code0 {o->value(pars->getparFloat(FilterParams::c_Pcategory));}
+          code0 {o->value(pars->getpar(FilterParams::c_Pcategory));}
         } {
           MenuItem {} {
             label Analog
@@ -334,7 +337,7 @@ pars=NULL;
           label {C.Freq}
           callback {pars->changepar(FilterParams::c_Pfreq, o->value());}
           tooltip {Center Frequency of the Filter or the base position in the vowel's sequence} xywh {75 25 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(pars->getparFloat(FilterParams::c_Pfreq));}
+          code0 {o->value(pars->getpar(FilterParams::c_Pfreq));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -346,7 +349,7 @@ pars=NULL;
           label Q
           callback {pars->changepar(FilterParams::c_Pq,o->value()); formantfiltergraph->redraw();}
           tooltip {Filter resonance or bandwidth} xywh {110 25 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(pars->getparFloat(FilterParams::c_Pq));}
+          code0 {o->value(pars->getpar(FilterParams::c_Pq));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -358,7 +361,7 @@ pars=NULL;
           label {freq.tr.}
           callback {pars->changepar(FilterParams::c_Pfreqtrack, o->value());}
           tooltip {Filter frequency tracking (left is negative, middle is 0, and right is positive)} xywh {215 25 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(pars->getparFloat(FilterParams::c_Pfreqtrack));}
+          code0 {o->value(pars->getpar(FilterParams::c_Pfreqtrack));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -384,7 +387,7 @@ pars=NULL;
               formantfiltergraph->redraw();
               pars->changed = true;}
           tooltip {Filter output gain/damp} xywh {250 35 20 20} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(pars->getparFloat(FilterParams::c_Pgain));}
+          code0 {o->value(pars->getpar(FilterParams::c_Pgain));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -399,7 +402,7 @@ pars=NULL;
               pars->changed = true;}
           tooltip {Filter stages (in order to increase dB/oct. value and the order of the filter)} xywh {235 5 35 15} down_box BORDER_BOX labelsize 10 textfont 1 textsize 10
           code1 {for (int i=0;i<MAX_FILTER_STAGES;i++) {char tmp[10];snprintf(tmp,10,"%dx",i+1);o->add(tmp);};}
-          code2 {o->value(pars->getparFloat(FilterParams::c_Pstages));}
+          code2 {o->value(pars->getpar(FilterParams::c_Pstages));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = pars; 
@@ -490,7 +493,7 @@ pars=NULL;
               pars->changed = true;}
           xywh {595 62 55 20} type Simple labelfont 1 labelsize 10 align 5 minimum 0 maximum 127 step 1 textfont 1 textsize 11
           code0 {o->bounds(1,FF_MAX_SEQUENCE-1);}
-          code1 {o->value(pars->getparFloat(FilterParams::c_Psequencesize));}
+          code1 {o->value(pars->getpar(FilterParams::c_Psequencesize));}
         }
         Fl_Counter {} {
           label {S.Pos.}
@@ -511,13 +514,13 @@ pars=NULL;
           label {Neg.Input}
           callback {pars->changepar(FilterParams::c_Psequencereversed, o->value());pars->changed=true;}
           tooltip {Negate the input from LFO/envelopes/etc.} xywh {625 132 60 20} down_box DOWN_BOX labelsize 10
-          code0 {o->value(pars->getparFloat(FilterParams::c_Psequencereversed));}
+          code0 {o->value(pars->getpar(FilterParams::c_Psequencereversed));}
         }
         Fl_Dial strchdial {
           label Strch
           callback {pars->changepar(FilterParams::c_Psequencestretch, o->value());pars->changed=true;}
           tooltip {Sequence Stretch} xywh {595 130 25 25} box ROUND_UP_BOX labelsize 10 align 1 maximum 127 step 1
-          code0 {o->value(pars->getparFloat(FilterParams::c_Psequencestretch));}
+          code0 {o->value(pars->getpar(FilterParams::c_Psequencestretch));}
           class WidgetPDial
         }
       }
@@ -529,13 +532,13 @@ pars=NULL;
             formantfiltergraph->redraw();}
         xywh {485 15 65 20} type Simple labelfont 1 labelsize 10 align 1 minimum 0 maximum 127 step 1 textsize 12
         code0 {o->bounds(1,FF_MAX_FORMANTS);}
-        code1 {o->value(pars->getparFloat(FilterParams::c_Pnumformants));}
+        code1 {o->value(pars->getpar(FilterParams::c_Pnumformants));}
       }
       Fl_Dial frsldial {
         label {Fr.Sl.}
         callback {pars->changepar(FilterParams::c_Pformantslowness, o->value());pars->changed=true;}
         tooltip {Formant's Slowness (Morphing)} xywh {565 15 25 25} box ROUND_UP_BOX labelfont 1 labelsize 10 align 1 maximum 127 step 1
-        code0 {o->value(pars->getparFloat(FilterParams::c_Pformantslowness));}
+        code0 {o->value(pars->getpar(FilterParams::c_Pformantslowness));}
         class WidgetPDial
       }
       Fl_Value_Output centerfreqvo {
@@ -557,14 +560,14 @@ pars=NULL;
             formantfiltergraph->redraw();
             pars->changed = true;}
         xywh {556 167 84 15} type {Horz Knob} box FLAT_BOX maximum 127
-        code0 {o->value(pars->getparFloat(FilterParams::c_Pcenterfreq));}
+        code0 {o->value(pars->getpar(FilterParams::c_Pcenterfreq));}
       }
       Fl_Slider octknob {
         callback {pars->changepar(FilterParams::c_Poctavesfreq, o->value());
             octavesfreqvo->do_callback();
             formantfiltergraph->redraw();}
         xywh {556 185 84 15} type {Horz Knob} box FLAT_BOX maximum 127
-        code0 {o->value(pars->getparFloat(FilterParams::c_Poctavesfreq));}
+        code0 {o->value(pars->getpar(FilterParams::c_Poctavesfreq));}
       }
       Fl_Box formantfiltergraph {
         xywh {5 5 475 195} box BORDER_BOX
@@ -575,7 +578,7 @@ pars=NULL;
         label {Vw.Cl.}
         callback {pars->changepar(FilterParams::c_Pvowelclearness, o->value());pars->changed = true;}
         tooltip {Vowel "clearness" (how the mixed vowels are avoided)} xywh {600 15 25 25} box ROUND_UP_BOX labelfont 1 labelsize 10 align 1 maximum 127 step 1
-        code0 {o->value(pars->getparFloat(FilterParams::c_Pvowelclearness));}
+        code0 {o->value(pars->getpar(FilterParams::c_Pvowelclearness));}
         class WidgetPDial
       }
       Fl_Button {} {
@@ -662,6 +665,7 @@ pars=NULL;
   } {
     code {pars=filterpars_;
         synth = pars->getSynthEngine();
+        std::cout << "FilterUI reassignMidi" << endl;
         reassignMidi(pars);
         velsnsamp = velsnsamp_;
         velsns = velsns_;

@@ -48,6 +48,8 @@ EffectMgr::~EffectMgr()
 {
     if (efx)
         delete efx;
+    std::cout << "~EffectMgr" << endl;
+    removeAllMidiControllers(synth);
     fftwf_free(efxoutl);
     fftwf_free(efxoutr);
 }
@@ -160,7 +162,7 @@ void EffectMgr::seteffectpar_nolock(int npar, unsigned char value)
     efx->changepar(npar, value);
 }
 
-void EffectMgr::changepar(int npar, double value){
+void EffectMgr::changepar(int npar, float value){
     synth->actionLock(lock);
     seteffectpar_nolock(npar, value);
     synth->actionLock(unlock);
@@ -175,7 +177,7 @@ void EffectMgr::seteffectpar(int npar, unsigned char value)
     synth->actionLock(unlock);
 }
 
-float EffectMgr::getparFloat(int npar){
+float EffectMgr::getpar(int npar){
     if (!efx)
         return 0;
     return efx->getpar(npar);

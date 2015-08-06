@@ -79,6 +79,8 @@ class PartSysEffSend {: {public Fl_Group, private MiscFuncs}
   Function {init(int npart_, int neff_, SynthEngine *_synth)} {} {
     code {//
         synth = _synth;
+        //std::cout << "PartUI reassignMidi" << endl;
+        //reassignMidi()
         npart = npart_;
         neff = neff_;
         make_window();
@@ -1205,7 +1207,8 @@ else {propta->deactivate();proptb->deactivate();}}
         adnoteui = NULL;
         subnoteui = NULL;
         padnoteui = NULL;
-        lastkititem = -1;} {}
+        lastkititem = -1;
+        // << " doing new PartUI" << endl;} {}
   }
   Function {init(Part *part_,int npart_,BankUI *bankui_)} {} {
     code {//
@@ -1337,7 +1340,10 @@ else {propta->deactivate();proptb->deactivate();}}
     instrumenteditwindow->copy_label(tname.c_str());} {}
   }
   Function {~PartUI()} {} {
-    code {if (adnoteui)
+    code {
+        std::cout << "PartUI unassignUIControls" << endl;
+        unassignUIControls();
+        if (adnoteui)
             delete adnoteui;
         if (subnoteui)
             delete subnoteui;

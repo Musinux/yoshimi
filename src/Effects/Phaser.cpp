@@ -394,7 +394,7 @@ void Phaser::setpreset(unsigned char npreset)
 }
 
 
-void Phaser::changepar(int npar, unsigned char value)
+void Phaser::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -454,7 +454,7 @@ void Phaser::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Phaser::getpar(int npar)
+float Phaser::getpar(int npar)
 {
     switch (npar)
     {

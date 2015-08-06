@@ -477,7 +477,7 @@ void Reverb::setpreset(unsigned char npreset)
 }
 
 
-void Reverb::changepar(int npar, unsigned char value)
+void Reverb::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -522,7 +522,7 @@ void Reverb::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Reverb::getpar(int npar)
+float Reverb::getpar(int npar)
 {
     switch (npar)
     {

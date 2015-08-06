@@ -96,7 +96,7 @@ LFO::~LFO() {
     lfopars->removeLFO(this);
 }
 
-void LFO::changepar(int npar, double value){
+void LFO::changepar(int npar, float value){
     float lfofreq;
     float lfostretch;
     switch(npar){
@@ -146,7 +146,7 @@ void LFO::changepar(int npar, double value){
     return;
 }
 
-float LFO::getparFloat(int npar){
+float LFO::getpar(int npar){
     switch(npar){
         case LFOParams::c_Pintensity:
             return lfopars->Pintensity;

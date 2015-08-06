@@ -3,7 +3,7 @@
 
 #ifndef ControllableByMIDIUI_h
 #define ControllableByMIDIUI_h
-#include <FL/Fl.H>
+
 // Original ZynAddSubFX author Nasca Octavian Paul
 // Copyright (C) 2002-2005 Nasca Octavian Paul
 // Copyright 2009-2010, Alan Calvert
@@ -24,16 +24,19 @@
 
 // This file is a derivative of the ZynAddSubFX original, modified January 2010
 
-#include "Params/ControllableByMIDI.h"
-    #include <iostream>
-    class ControllableByMIDI;
+#include <iostream>
+class ControllableByMIDI;
 
 class ControllableByMIDIUI {
 public:
-  ControllableByMIDI *controller; 
-  virtual void refresh();
-  void reassignMidi(ControllableByMIDI *ctrl);
-  ControllableByMIDIUI();
-  ~ControllableByMIDIUI();
+  
+	virtual void refresh() = 0;
+	void reassignMidi(ControllableByMIDI *ctrl);
+	void unassignUIControls();
+	void setController(ControllableByMIDI *_controller);
+	ControllableByMIDIUI();
+	virtual ~ControllableByMIDIUI() {}
+private:
+	ControllableByMIDI *controller; 
 };
 #endif

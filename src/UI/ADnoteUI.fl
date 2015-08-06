@@ -46,7 +46,8 @@ decl {\#include "Misc/SynthHelper.h"
     \#include "EnvelopeUI.h"
     \#include "LFOUI.h"
     \#include "OscilGenUI.h"
-    \#include "Misc/ControllableByMIDIUI.h"} {public global
+    //\#include "Misc/ControllableByMIDIUI.h"
+    } {public global
 } 
 
 decl {\#include "MasterUI.h"} {private global
@@ -149,7 +150,7 @@ class ADvoicelistitem {: {public Fl_Group, SynthHelper}
   }
   Function {init(ADnoteParameters *parameters,int nvoice_)} {} {
     code {//
-	synth = parameters->getSynthEngine();
+	       synth = parameters->getSynthEngine();
         pars = parameters;
         nvoice = nvoice_;
         make_window();
@@ -1358,6 +1359,8 @@ class ADnoteUI {selected : {public PresetsUI_, SynthHelper, ControllableByMIDIUI
   Function {~ADnoteUI()} {return_type virtual
   } {
     code {//
+        std::cout << "ADnoteUI unassignUIControls" << endl;
+        unassignUIControls();
         ADnoteVoiceList->hide();
         ADnoteGlobalParameters->hide();
         ADnoteVoice->hide();

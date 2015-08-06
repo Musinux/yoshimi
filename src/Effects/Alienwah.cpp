@@ -185,7 +185,7 @@ void Alienwah::setpreset(unsigned char npreset)
 }
 
 
-void Alienwah::changepar(int npar, unsigned char value)
+void Alienwah::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -230,7 +230,7 @@ void Alienwah::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Alienwah::getpar(int npar)
+float Alienwah::getpar(int npar)
 {
     switch (npar)
     {

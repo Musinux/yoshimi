@@ -70,9 +70,8 @@ class EffectMgr : public Presets, public ControllableByMIDI
 
         SynthEngine *getSynthEngine() {return synth;}
 
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar) { return -1;}
-        float getparFloat(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
 
         float *efxoutl, *efxoutr;
         bool insertion; // the effect is connected as insertion effect (or not)

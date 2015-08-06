@@ -276,7 +276,7 @@ void EnvelopeParams::store2defaults(void)
     DR_val = PR_val;
 }
 
-void EnvelopeParams::changepar(int npar, double value){
+void EnvelopeParams::changepar(int npar, float value){
     switch(npar){
         case c_Pfreemode:
             Pfreemode = value >= 1 ? 1:0;
@@ -321,7 +321,7 @@ void EnvelopeParams::changepar(int npar, double value){
     return;
 }
 
-float EnvelopeParams::getparFloat(int npar){
+float EnvelopeParams::getpar(int npar){
     switch(npar){
         case c_Pfreemode:
             return Pfreemode;

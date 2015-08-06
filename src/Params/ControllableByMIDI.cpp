@@ -8,89 +8,156 @@ using namespace std;
 #include <iostream>
 #include <list>
 
-midiControl::~midiControl(){
+midiControl::midiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par, bool recording): 
+        ccNbr(ccNbr), 
+        channel(channel), 
+        min(min), 
+        max(max), 
+        controller(controller), 
+        ui(ui), 
+        par(par), 
+        recording(recording) 
+{
+    init();
+}
+
+midiControl::midiControl(ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par ): 
+        ccNbr(-1), 
+        channel(-1), 
+        min(0), max(127), 
+        controller(controller), 
+        ui(ui), 
+        par(par), 
+        recording(true) 
+{
+    init();
+}
+
+void midiControl::init()
+{
+    if(!controller){
+        // << "midiControl: the controller should be initialized !" << endl;
+    }
+    else {
+        controller->addMidiController(this);
+    }
+}
+
+midiControl::~midiControl()
+{
+    std::cout << "~midiControl" << endl;
     if(controller)
         controller->removeMidiController(this);
 }
 
-void midiControl::changepar(int value){
-    //std::cout << "Par changed, par: " << par << ", value: " << value << endl;
+void midiControl::changepar(int value)
+{
+    //// << "Par changed, par: " << par << ", value: " << value << endl;
     controller->changepar(par, value);
 }
 
-float midiControl::getpar(){
-    float value;
+float midiControl::getpar()
+{
     if(!controller) return 0;
-    if(isFloat){
-        value=controller->getparFloat(par);
-    }
-    else {
-        value = (float)controller->getparChar(par);
-    }
-    return value;
+
+    return controller->getpar(par);
+}
+
+void midiControl::removeUI()
+{
+    ui = NULL;
 }
 
 /*ControllableByMIDI::~ControllableByMIDI(){
     removeAllMidiControllers();
 }*/
 
-void ControllableByMIDI::removeAllMidiControllers(SynthEngine *synth){
-    if(isControlled){
-        list<midiControl*>::iterator i;
-        //std::cout << "controllers to delete: " << controllers.size() << endl;
-        for(i=controllers.begin(); controllers.size() > 0 && i != controllers.end();i++){
-            synth->removeMidiControl(*i);
-            i--;
-        }
-        isControlled = false;
+void ControllableByMIDI::removeAllMidiControllers(SynthEngine *synth)
+{
+    if(alreadyDeleting){
+        std::cout << "already deleting (all)" << endl;
+        return;
     }
+    alreadyDeleting = true;
+    std::cout << "SET already deleting" << endl;
+    if(controllers.size() > 0){
+        list<midiControl*>::iterator i;
+        std::cout << "controllers to delete: " << controllers.size() << endl;
+        for(i=controllers.begin(); i != controllers.end();){
+            synth->removeMidiControl(*i);
+            std::cout << "one deleted" << endl;
+            i = controllers.erase(i);
+        }
+        controllers.clear();
+
+    }
+    std::cout << "controllers left: " << controllers.size() << endl;
+    std::cout << std::flush;
+    alreadyDeleting = false;
 }
 
-void ControllableByMIDI::reassignUIControls(ControllableByMIDIUI *ctrl){
-    if(isControlled){
+void ControllableByMIDI::reassignUIControls(ControllableByMIDIUI *ctrl)
+{
+    if(controllers.size()>0){
         list<midiControl*>::iterator i;
-        //std::cout << "Recreating ui controls (" << controllers.size() << ")" << endl; 
+        // << "Recreating ui controls (" << controllers.size() << ")" << endl; 
         for(i=controllers.begin(); i != controllers.end();i++){
             (*i)->ui = ctrl;
         }
+        cout << "ControllableByMIDI::reassignUIControls: controllers :" << controllers.size() << endl;
     }
 }
 
-void ControllableByMIDI::unassignUIControls(){
-    if(isControlled){
-        //std::cout << "Removing ui controls (" << controllers.size() << ")" << endl; 
-        list<midiControl*>::iterator i;
+void ControllableByMIDI::unassignUIControls()
+{
+    if(alreadyDeleting) return;
+    list<midiControl*>::iterator i;
+    cout <<  "ControllableByMIDI::unassignUIControls" << endl;
+    cout <<  std::flush;
+    if(controllers.size() > 0){
+        //cout <<  "Removing ui controls (" << controllers.size() << ")" << endl; 
+        //cout <<  std::flush;
+        
         for(i=controllers.begin(); i != controllers.end();i++){
-            (*i)->ui = NULL;
+            /*if((*i)->ui != NULL){
+                (*i)->ui->controller = NULL;
+            }*/
+            (*i)->removeUI();
         }
+        std::cout << "size of controllers: " << controllers.size() << endl;
     }
 }
 
-void ControllableByMIDI::addMidiController(midiControl *ctrl){
-    isControlled = true;
+void ControllableByMIDI::addMidiController(midiControl *ctrl)
+{
     list<midiControl*>::iterator i;
     for(i=controllers.begin(); i != controllers.end();i++){
-        if((*i) == ctrl){
+        if((*i) == ctrl || (*i)->par == ctrl->par){
             return;
         }
     }
     controllers.push_back(ctrl);
 }
 
-void ControllableByMIDI::removeMidiController(midiControl *ctrl){
+void ControllableByMIDI::removeMidiController(midiControl *ctrl)
+{
+    if(alreadyDeleting){
+        std::cout << "already deleting" << endl;
+        return;
+    }
     list<midiControl*>::iterator i;
+    std::cout << "controllers to delete: " << controllers.size() << endl;
     for(i=controllers.begin(); i != controllers.end();i++){
         if((*i) == ctrl){
+            cout << "Deleting reference " << (*i) << endl;
             controllers.erase(i);
-            if(controllers.size() == 0){
-                isControlled = false;
-            }
             return;
         }
     }
 }
 
-midiControl *ControllableByMIDI::hasMidiController(int par){
+midiControl *ControllableByMIDI::hasMidiController(int par)
+{
     list<midiControl*>::iterator i;
     for(i=controllers.begin(); i != controllers.end();i++){
         if((*i)->par == par){
@@ -100,7 +167,8 @@ midiControl *ControllableByMIDI::hasMidiController(int par){
     return NULL;
 }
 
-void ControllableByMIDI::add2XMLMidi(XMLwrapper *xml){
+void ControllableByMIDI::add2XMLMidi(XMLwrapper *xml)
+{
     if(controllers.size() == 0)
         return;
     xml->beginbranch("MIDI_CONTROLLERS");
@@ -114,31 +182,35 @@ void ControllableByMIDI::add2XMLMidi(XMLwrapper *xml){
         xml->addpar("min", (*i)->min);
         xml->addpar("max", (*i)->max);
         xml->addpar("par", (*i)->par);
-        xml->addparbool("isFloat", (*i)->isFloat);
+        //xml->addparbool("isFloat", (*i)->isFloat);
         xml->endbranch();
         cpt++;
     }
     xml->endbranch();
 };
-void ControllableByMIDI::getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth){
+void ControllableByMIDI::getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth)
+{
     if(!xml->enterbranch("MIDI_CONTROLLERS"))
         return;
     int cpt = 0;
+    int ccNbr, channel, par, min, max;
     while(xml->enterbranch("CONTROLLER", cpt) != false){
-        midiControl *mc = new midiControl(
-                xml->getpar127("ccNbr", -1),
-                xml->getpar127("channel", -1),
-                xml->getpar127("min", 0),
-                xml->getpar127("max", 127),
-                this,
-                NULL,
-                xml->getpar("par", -1, 0, 30),
-                xml->getparbool("isFloat", 1)
-            );
-        xml->exitbranch();
-        synth->addMidiControl(mc);
-        //cout << "Controller read (" << cpt << ") " << mc->channel << " " << mc->ccNbr << endl;
+        ccNbr = xml->getpar127("ccNbr", -1);
+        channel = xml->getpar127("channel", -1);
+        min = xml->getpar127("min", 0);
+        max = xml->getpar127("max", 127);
+        par = xml->getpar("par", -1, 0, 30);
+        xml->getparbool("isFloat", 1); // to be compliant with previous version
+        if(ccNbr == -1 || channel == -1){
+            cout << "Error on reading ccNbr or channel (" << ccNbr << ", " << channel  << ")" << endl;
+            cpt++;
+            xml->exitbranch();
+            continue;
+        }
+        cout << "Controller read (" << cpt << ") " << channel << " " << ccNbr << " (" << this << ", " << par << ")" << endl;
+        synth->addMidiControl(ccNbr, channel, min, max, this, NULL, par, false);
         cpt++;
+        xml->exitbranch();
     }
     xml->exitbranch();
 };

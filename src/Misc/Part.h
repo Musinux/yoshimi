@@ -97,10 +97,8 @@ class Part : private MiscFuncs, SynthHelper, public ControllableByMIDI
         } kit[NUM_KIT_ITEMS];
 
         // Midi Controls
-        unsigned char getpar(int npar);
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar){ return getpar(npar);}
-        float getparFloat(int npar){ return (float)getpar(npar);}
+        void changepar(int npar, float value);
+        float getpar(int npar);
 
         // Part parameters
         void setkeylimit(unsigned char Pkeylimit_);

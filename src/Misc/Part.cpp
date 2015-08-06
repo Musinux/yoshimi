@@ -647,32 +647,32 @@ void Part::NoteOff(int note) //relase the key
     }
 }
 
-unsigned char Part::getpar(int npar){
+float Part::getpar(int npar){
     switch(npar){
         case 0:
-            return (unsigned char)ctl->pitchwheel.data;
+            return ctl->pitchwheel.data;
         case 1:
-            return (unsigned char)ctl->expression.data;
+            return ctl->expression.data;
         case 2:
-            return (unsigned char)ctl->portamento.data;
+            return ctl->portamento.data;
         case 3:
-            return (unsigned char)ctl->panning.data;
+            return ctl->panning.data;
         case 4:
-            return (unsigned char)ctl->filtercutoff.data;
+            return ctl->filtercutoff.data;
         case 5:
-            return (unsigned char)ctl->filterq.data;
+            return ctl->filterq.data;
         case 6:
-            return (unsigned char)ctl->bandwidth.data;
+            return ctl->bandwidth.data;
         case 7:
-            return (unsigned char)ctl->modwheel.data;
+            return ctl->modwheel.data;
         case 8:
-            return (unsigned char)ctl->fmamp.data;
+            return ctl->fmamp.data;
         case 9:
-            return (unsigned char)ctl->volume.data;
+            return ctl->volume.data;
         case 10:
-            return (unsigned char)ctl->sustain.data;
+            return ctl->sustain.data;
         case 11:
-            return (unsigned char)ctl->legato.data;
+            return ctl->legato.data;
         case 12:
             return 0;
         case 13:
@@ -680,13 +680,14 @@ unsigned char Part::getpar(int npar){
         case 14:
             return 0;
         case 15:
-            return (unsigned char)ctl->resonancecenter.data;
+            return ctl->resonancecenter.data;
         case 16:
-            return (unsigned char)ctl->resonancebandwidth.data;
+            return ctl->resonancebandwidth.data;
     }
+    return 0;
 }
 
-void Part::changepar(int npar, double value){
+void Part::changepar(int npar, float value){
     switch (npar){
         case 0:
             SetController(C_pitchwheel, (int)value);

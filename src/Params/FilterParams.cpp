@@ -254,7 +254,7 @@ void FilterParams::formantfilterH(int nvowel, int nfreqs, float *freqs)
     }
 }
 
-void FilterParams::changepar(int npar, double value){
+void FilterParams::changepar(int npar, float value){
     switch(npar){
         case c_Pcategory:
             Pcategory = value;
@@ -304,7 +304,7 @@ void FilterParams::changepar(int npar, double value){
     }
 }
 
-float FilterParams::getparFloat(int npar){
+float FilterParams::getpar(int npar){
     switch(npar){
         case c_Pcategory:
             return Pcategory;

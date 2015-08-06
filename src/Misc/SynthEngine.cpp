@@ -30,12 +30,9 @@
 
 using namespace std;
 
-#include "MidiControllerUI.h"
 #include "MasterUI.h"
 #include "Misc/SynthEngine.h"
 #include "Misc/Config.h"
-#include "Params/ControllableByMIDI.h"
-#include "Misc/ControllableByMIDIUI.h"
 #include <iostream>
 #include <list>
 
@@ -100,7 +97,8 @@ SynthEngine::SynthEngine(int argc, char **argv, bool _isLV2Plugin, unsigned int 
     guiClosedCallback(NULL),
     guiCallbackArg(NULL),
     LFOtime(0),
-    windowTitle("Yoshimi" + asString(uniqueId))
+    windowTitle("Yoshimi" + asString(uniqueId)),
+    alreadyDeletingMidiControls(false)
 {    
     if(bank.roots.empty())
     {
@@ -330,6 +328,7 @@ void SynthEngine::defaults(void)
     setPvolume(90);
     setPkeyshift(64);
     removeAllMidiControls();
+
     for (int npart = 0; npart < NUM_MIDI_PARTS; ++npart)
     {
         part[npart]->defaults();
@@ -394,25 +393,42 @@ void SynthEngine::NoteOff(unsigned char chan, unsigned char note)
 }
 
 // Midi Control
-void SynthEngine::addMidiControl(midiControl *midiCtrl) {
-    midiCtrl->controller->addMidiController(midiCtrl);
-    midiControls.push_back(midiCtrl);
+/**
+    Every midiControl struct HAVE TO be instanciated HERE, to keep track of any change.
+    Some lists are duplicated elsewhere to help the knobs to move, but EVERY addition or deletion MUST BE DONE HERE.
+    The midiControl delete itself the links made with some ControllableByMIDI when deleted.
+ */
+void SynthEngine::addMidiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par,  bool recording) {
+    list<midiControl*>::iterator i;
+    for(i=midiControls.begin(); i != midiControls.end();i++){
+        if((*i)->controller == controller && (*i)->par == par){
+            getRuntime().Log("The parameter " + asString((long)controller) + " " + asString(par) +" is already midi controlled!");
+            return;
+        }
+        else if ((*i)->ccNbr == ccNbr && (*i)->channel == channel){
+            getRuntime().Log("This CC " + asString(ccNbr) + " and channel " + asString(channel) +" are already midi controlled!");
+            return;
+        }
+    }
+    midiControl *mc = new midiControl(ccNbr,channel,min,max,controller,ui,par,recording);
+    midiControls.push_back(mc);
+    getRuntime().Log("midiControls: " + asString(midiControls.size()));
     GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
 }
 
 void SynthEngine::addMidiControl(ControllableByMIDI *ctrl, int par, ControllableByMIDIUI *ui) {
-    //                                              isFloat
-    midiControl *mc = new midiControl(ctrl, ui, par, true);
-    ctrl->addMidiController(mc);
-    midiControls.push_back(mc);
-    GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
+    addMidiControl(-1, -1, 0, 127, ctrl, ui, par, true);
 }
 
 void SynthEngine::removeMidiControl(midiControl *midiCtrl) {
+    if(alreadyDeletingMidiControls){
+        std::cout << "SyntEngine: already deleting" << endl;
+        return;
+    }
     list<midiControl*>::iterator i;
     for(i=midiControls.begin(); i != midiControls.end();i++){
         if((*i) == midiCtrl){
-            delete (*i);
+            delete *i;
             midiControls.erase(i);
             GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
             return;
@@ -422,36 +438,65 @@ void SynthEngine::removeMidiControl(midiControl *midiCtrl) {
 }
 
 void SynthEngine::removeAllMidiControls() {
-    list<midiControl*>::iterator i;
-    for(i=midiControls.begin(); i != midiControls.end();i++){
-        //cout << "deleting control "<< (*i)->ccNbr << endl;
-        delete (*i);
+    if(alreadyDeletingMidiControls){
+        std::cout << "SyntEngine: already deleting" << endl;
+        return;
     }
-    midiControls.clear();
+    alreadyDeletingMidiControls = true;
+    list<midiControl*>::iterator i, j;
+    for(i=midiControls.begin(); i != midiControls.end();){
+        cout << "Controllers :" << midiControls.size() << endl;
+        cout << "deleting control "<< (*i)->ccNbr << ", " << (*i)->channel << " | (" << (*i)->controller << "," << (*i)->par << ")" << endl;
+        
+        j = midiControls.erase(i);
+        cout << "before delete" << endl;
+        delete *i;
+        i = j;
+    }
     GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
+    alreadyDeletingMidiControls = false;
 }
 
 // Controllers
 void SynthEngine::SetController(unsigned char chan, int type, short int par)
 {
     list<midiControl*>::iterator i;
-    //std::cout << "Number of midicontrols " << midiControls.size() << endl;
+    list<midiControl*>::iterator j;
+    cout << "Number of midicontrols " << midiControls.size() << endl;
+    bool midiAlreadyTaken;
+    bool midiUsed = false;
+    cout << "MIDI:  value:" << type << " chan:" << (int)chan << endl;
     for(i=midiControls.begin(); i != midiControls.end();i++){
         if((*i)->recording) {
-            std::cout << "Value recorded" << endl;
-            (*i)->ccNbr = type;
-            (*i)->channel = chan;
-            (*i)->recording = false;
+            midiUsed = true;
+            midiAlreadyTaken = false;
+            for(j=midiControls.begin(); j != midiControls.end();j++){
+                if((*j)->ccNbr == type && (*j)->channel == chan){
+                    midiAlreadyTaken = true;
+                    break;
+                }   
+            }
+            if(!midiAlreadyTaken){
+
+                (*i)->ccNbr = type;
+                (*i)->channel = chan;
+                (*i)->recording = false;
+            }
         }
+        //cout << "(test)MIDI:  value:" << (*i)->ccNbr << " chan:" << (int)(*i)->channel << endl;
         if((*i)->ccNbr == type && (*i)->channel == chan) {
-            //std::cout << "Found Control" << endl;
+            midiUsed = true;
+            //cout << "Recognized" << endl;
             (*i)->changepar(par);
             GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
             if((*i)->ui)
                 GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateUIWindow, 0, (*i)->ui);
-            return;
+            
         }
     }
+
+    if(midiUsed)
+        return;
 
     if (type == Runtime.midi_bank_C) {
         SetBank(par); //shouldn't get here. Banks are set directly via SetBank method from MusicIO class
@@ -985,11 +1030,11 @@ bool SynthEngine::fetchMeterData(VUtransfer *VUdata)
     return false;
 }
 
-void SynthEngine::changepar(int npar, double value){
+void SynthEngine::changepar(int npar, float value){
 
     switch(npar){
         case 0:
-            setPvolume((char)value);
+            setPvolume((unsigned char)value);
             break;
         case 1:
             microtonal.Pglobalfinedetune = (int)value; // Doesn't change on a single note
@@ -997,7 +1042,7 @@ void SynthEngine::changepar(int npar, double value){
     }
 }
 
-unsigned char SynthEngine::getpar(int npar){
+float SynthEngine::getpar(int npar){
     switch(npar){
         case 0:
             return (unsigned char)Pvolume;
@@ -1111,6 +1156,7 @@ int SynthEngine::loadParameters(string fname)
         if (Runtime.SimpleCheck)
             result = 3;
     }
+    // << "Loading from XML done." << endl;
     actionLock(unlock);
     return result;
 }

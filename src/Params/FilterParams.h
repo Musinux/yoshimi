@@ -85,9 +85,8 @@ class FilterParams : public Presets, private MiscFuncs, public ControllableByMID
             c_Psequencereversed
         };
 
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar){ return -1;}
-        float getparFloat(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
 
         unsigned char Pcategory;  // Filter category (Analog/Formant/StVar)
         unsigned char Ptype;      // Filter type  (for analog lpf,hpf,bpf..)

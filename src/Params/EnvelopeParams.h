@@ -67,9 +67,8 @@ class EnvelopeParams : public Presets, public ControllableByMIDI
             c_Plinearenvelope
         };
 
-        void changepar(int npar, double value);
-        unsigned char getparChar(int npar) { return 0;};
-        float getparFloat(int npar);
+        void changepar(int npar, float value);
+        float getpar(int npar);
 
         // MIDI Parameters
         unsigned char Pfreemode; // 1 daca este in modul free sau 0 daca este in mod ADSR,ASR,...

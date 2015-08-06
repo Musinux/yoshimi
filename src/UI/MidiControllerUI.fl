@@ -44,7 +44,13 @@ decl {class WidgetPDial;} {public global
 
 class MidiCCRack {open : {public Fl_Group}
 } {
-  decl {Fl_Group* embossedGroup;WidgetPDial* dial;Fl_Input* title;Fl_Spinner* spinner;Fl_Spinner* Channelspinner;midiControl* controller;} {}
+  decl {
+    Fl_Group* embossedGroup;
+    WidgetPDial* dial;
+    Fl_Input* title;
+    Fl_Spinner* spinner;
+    Fl_Spinner* Channelspinner;
+    midiControl* controller;} {public}
   Function {MidiCCRack(int x, int y, int w, int h) : Fl_Group(x,y,w,h)} {open
   } {
     code {embossedGroup = new Fl_Group(x, y, 300, 80);
@@ -58,7 +64,6 @@ class MidiCCRack {open : {public Fl_Group}
           dial->maximum(127);
           dial->step(1);
           dial->labelsize(10);
-          dial->controllable = true;
           this->synth = dial->getSynth();
         spinner = new Fl_Spinner(x+115, y+25, 40, 17, "CC signal:");
           spinner->maximum(127);
@@ -121,7 +126,7 @@ class MidiCCRack {open : {public Fl_Group}
   } {
     code {MidiCCRack* caller = (MidiCCRack*)p;
      caller->synth->removeMidiControl(caller->controller);
-     ((MidiCCWindow*)caller->parent()->parent())->updateRack();} {}
+     ((MidiCCWindow*)caller->parent()->parent())->refresh();} {}
   }
   Function {spinnerChanged(Fl_Widget* w, void* p)} {open private return_type {static void}
   } {
@@ -145,6 +150,18 @@ class MidiCCRack {open : {public Fl_Group}
         int value = caller->Channelspinner->value() -1;
         caller->controller->channel = value;} {}
   }
+  Function {refresh()} {open public return_type {void}
+  } {
+    code {
+      if(controller){
+        dial->value(controller->getpar());
+        spinner->value(controller->ccNbr);
+        dial->value(controller->getpar());
+        Channelspinner->value(controller->channel+1);
+        redraw();
+      }
+    } {}
+  }
   decl {SynthEngine *synth;} {public
   }
 } 
@@ -155,34 +172,82 @@ class MidiCCWindow {open : {public Fl_Double_Window}
   } {
     code {scrollArea = new Fl_Scroll(0,0,this->w(),this->h(),"");
 end();
-updateRack();} {}
+refresh();} {}
   }
   Function {Show()} {open return_type void
   } {
-    code {updateRack();
+    code {refresh();
 show();} {}
   }
-  Function {updateRack()} {open return_type void
+  Function {refresh()} {open return_type void
   } {
     code {
-	scrollArea->clear();
-
+        // << "refresh rack:" << endl;
+        // << std::flush;
+        // << " midiControls: " << synth->midiControls.size() << ", MidiCCRack: " << midiccrack.size() << endl;
+        // << std::flush;
         list<midiControl*>::iterator i;
-        int j = 0;
-        if(synth->midiControls.size() < 1){
+        list<MidiCCRack*>::iterator j, k;
+        bool found = false;
+        // If the number of knobs is smaller than the number of controls, we add the missing
+        //if(synth->midiControls.size() > midiccrack.size()){ 
+          for(i=synth->midiControls.begin();i!=synth->midiControls.end();i++) { // We check all midiControls
+            found = false;
+            for(j = midiccrack.begin(); j != midiccrack.end(); j++){ // If we find the equivalent in the UI, we let it go
+              if((*j)->controller == *i){
+                found = true;
+                break;
+              }
+            }
+            if(!found){ // If we dont find the equivalent, we add one
+              MidiCCRack* temp=new MidiCCRack(0,82*midiccrack.size(),300,80);
+              temp->synth = synth;
+              temp->setMidiController(*i);
+              midiccrack.push_back(temp);
+              scrollArea->add(temp);
+              // << "added one control to UI" << endl;
+              // << std::flush;
+            }
+          }
+        //}
+        // If the number of knobs is bigger than the number of controls, we remove the ones not needed
+        //else if(synth->midiControls.size() < midiccrack.size()) { 
+          for(j = midiccrack.begin(); j != midiccrack.end();){ // We check all UI controls
+            found = false;
+            for(i=synth->midiControls.begin();i!=synth->midiControls.end();i++) { // If we find the equivalent in the midi controls, we keep it
+              if((*j)->controller == *i){
+                found = true;
+                break;
+              }
+            }
+            if(!found){ // we delete it otherwise
+              scrollArea->remove(*j);
+              delete *j;
+              j=midiccrack.erase(j);
+              int l=0;
+              for(k = midiccrack.begin(); k != midiccrack.end();k++){
+                (*k)->position(0, 82*l);
+                l++;
+              }
+              // << "deleted one control of UI" << endl;
+              // << std::flush;
+            }
+            else {
+              ++j;
+            }
+          }
+        //}
+        
+        for(j = midiccrack.begin(); j != midiccrack.end(); j++){
+          (*j)->refresh();
+        }
+        if(midiccrack.size() < 1){
           hide();
         }
-	      for(i=synth->midiControls.begin();i!=synth->midiControls.end();i++) {
-            MidiCCRack* temp=new MidiCCRack(0,82*j,300,80);
-            temp->synth = synth;
-            scrollArea->add(temp);
-            //add(temp);
-            temp->setMidiController(*i);
-            j++;
-	       }
         redraw();} {}
   }
   decl {Fl_Scroll *scrollArea;} {}
+  decl {list<MidiCCRack*> midiccrack;} {}
   decl {SynthEngine *synth;} {public
   }
 } 

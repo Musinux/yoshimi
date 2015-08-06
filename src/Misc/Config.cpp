@@ -48,8 +48,6 @@ using namespace std;
 #include "Misc/SynthEngine.h"
 #include "Misc/Config.h"
 #include "MasterUI.h"
-#include "MidiControllerUI.h"
-#include "Misc/ControllableByMIDIUI.h"
 
 extern void mainRegisterAudioPort(SynthEngine *s, int portnum);
 
@@ -1131,23 +1129,24 @@ void GuiThreadMsg::processGuiMessages()
             break;
         case GuiThreadMsg::UpdateMidiControllers:
         {
+            // << "Sending Refresh signal" << endl;
             SynthEngine *synth = ((SynthEngine *)msg->data);
             MidiCCWindow *win = synth->getMidiCCWindow();
             if(win)
             {
-                win->updateRack();
+
+                win->refresh();
             }
         }
             break;
         case GuiThreadMsg::UpdateUIWindow:
         {
             if(msg->ui != NULL){
-                //std::cout << "Refreshing some ui... ";
-                //std::cout << std::flush;
-                if(msg->ui != NULL)
-                    msg->ui->refresh();
-                //std::cout << "Done." << endl;
-                //std::cout << std::flush;
+                // << "Refreshing some ui... ";
+                // << std::flush;
+                msg->ui->refresh();
+                // << "Done." << endl;
+                // << std::flush;
             }
         }
             break;

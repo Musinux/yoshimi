@@ -36,14 +36,11 @@ class Effect: public ControllableByMIDI
         virtual ~Effect() { };
 
         virtual void setpreset(unsigned char npreset) = 0;
-        virtual void changepar(int npar, unsigned char value) = 0;
-        virtual unsigned char getpar(int npar) = 0;
+        virtual void changepar(int npar, float value) = 0;
+        virtual float getpar(int npar) = 0;
         virtual void out(float *smpsl, float *smpsr) = 0;
         virtual void cleanup() { };
         virtual float getfreqresponse(float freq) { return (0); };
-        void changepar(int npar, double value){ changepar(npar, (unsigned char)value);}
-        unsigned char getparChar(int npar){ return getpar(npar);}
-        float getparFloat(int npar){ return (float)getpar(npar);}
 
         unsigned char Ppreset; // Currentl preset
         float *const efxoutl;

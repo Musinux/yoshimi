@@ -241,7 +241,10 @@ envASRbw=NULL;
 envfree=NULL;} {}
   }
   Function {~EnvelopeUI()} {} {
-    code {envwindow->hide();
+    code {
+    std::cout << "EnvelopeUI unassignUIControls" << endl;
+    unassignUIControls();
+    envwindow->hide();
 hide();
 freemodeeditwindow->hide();
 delete (freemodeeditwindow);} {}
@@ -324,8 +327,8 @@ freeedit->redraw();}
         label frcR
         callback {env->changepar(EnvelopeParams::c_Pforcedrelease, o->value());}
         tooltip {Forced Relase} xywh {410 165 40 15} down_box DOWN_BOX labelsize 10
-        code0 {o->value(env->getparFloat(EnvelopeParams::c_Pforcedrelease));}
-        code1 {if (env->getparFloat(EnvelopeParams::c_Pfreemode)==0) o->hide();}
+        code0 {o->value(env->getpar(EnvelopeParams::c_Pforcedrelease));}
+        code1 {if (env->getpar(EnvelopeParams::c_Pfreemode)==0) o->hide();}
         code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -337,8 +340,8 @@ freeedit->redraw();}
         label {Str.}
         callback {env->changepar(EnvelopeParams::c_Penvstretch, o->value());}
         tooltip {Envelope stretch (on lower notes make the envelope longer)} xywh {380 155 25 25} box ROUND_UP_BOX labelsize 10 align 4 maximum 127 step 1
-        code0 {o->value(env->getparFloat(EnvelopeParams::c_Penvstretch));}
-        code1 {if (env->getparFloat(EnvelopeParams::c_Pfreemode)==0) o->hide();}
+        code0 {o->value(env->getpar(EnvelopeParams::c_Penvstretch));}
+        code1 {if (env->getpar(EnvelopeParams::c_Pfreemode)==0) o->hide();}
         code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -395,7 +398,7 @@ envfree->redraw();}
           callback {env->changepar(EnvelopeParams::c_PA_dt, o->value());
 freeedit->redraw();}
           tooltip {Attack time} xywh {5 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -408,7 +411,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PD_dt,o->value());
 freeedit->redraw();}
           tooltip {Decay time} xywh {40 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PD_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PD_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -421,7 +424,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PR_dt,o->value());
 freeedit->redraw();}
           tooltip {Release time} xywh {110 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -434,7 +437,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PS_val,o->value());
 freeedit->redraw();}
           tooltip {Sustain value} xywh {75 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PS_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PS_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -446,7 +449,7 @@ freeedit->redraw();}
           label frcR
           callback {env->changepar(EnvelopeParams::c_Pforcedrelease,o->value());}
           tooltip {Forced Relase} xywh {180 35 20 15} down_box DOWN_BOX labelsize 10 align 6
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Pforcedrelease));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Pforcedrelease));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -458,7 +461,7 @@ freeedit->redraw();}
           label Stretch
           callback {env->changepar(EnvelopeParams::c_Penvstretch, o->value());}
           tooltip {Envelope stretch (on lower notes makes the envelope longer)} xywh {145 25 25 25} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Penvstretch));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Penvstretch));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -475,7 +478,7 @@ freeedit->redraw();}
           label L
           callback {env->changepar(EnvelopeParams::c_Plinearenvelope,o->value());}
           tooltip {The evelope is linear} xywh {180 20 15 15} down_box DOWN_BOX labelsize 10 align 4
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Plinearenvelope));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Plinearenvelope));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -511,7 +514,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PA_val,o->value());
           freeedit->redraw();}
           tooltip {Starting value} xywh {5 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -524,7 +527,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PA_dt,o->value());
 freeedit->redraw();}
           tooltip {Attack time} xywh {40 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -537,7 +540,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PR_val,o->value());
 freeedit->redraw();}
           tooltip {Release value} xywh {110 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -550,7 +553,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PR_dt,o->value());
 freeedit->redraw();}
           tooltip {Release time} xywh {75 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -562,7 +565,7 @@ freeedit->redraw();}
           label Stretch
           callback {env->changepar(EnvelopeParams::c_Penvstretch, o->value());}
           tooltip {Envelope stretch (on lower notes makes the envelope longer)} xywh {145 25 25 25} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Penvstretch));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Penvstretch));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -574,7 +577,7 @@ freeedit->redraw();}
           label frcR
           callback {env->changepar(EnvelopeParams::c_Pforcedrelease,o->value());}
           tooltip {Forced release} xywh {180 25 15 25} down_box DOWN_BOX labelsize 10 align 6
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Pforcedrelease));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Pforcedrelease));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -614,7 +617,7 @@ freeedit->redraw();}
           label {A.val}
           callback {env->changepar(EnvelopeParams::c_PA_val,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -629,7 +632,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PA_dt,o->value());
 freeedit->redraw();}
           tooltip {Attack time} xywh {40 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -642,7 +645,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PD_val,o->value());
 freeedit->redraw();}
           tooltip {decay value} xywh {75 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PD_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PD_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -655,7 +658,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PD_dt,o->value());
 freeedit->redraw();}
           tooltip {decay time} xywh {110 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PD_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PD_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -668,7 +671,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PR_dt,o->value());
 freeedit->redraw();}
           tooltip {Release time} xywh {145 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -681,7 +684,7 @@ freeedit->redraw();}
           callback {env->changepar(EnvelopeParams::c_PR_val,o->value());
 freeedit->redraw();}
           tooltip {Release value} xywh {180 20 30 30} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -693,7 +696,7 @@ freeedit->redraw();}
           label Stretch
           callback {env->changepar(EnvelopeParams::c_Penvstretch,o->value());}
           tooltip {Envelope stretch (on lower notes makes the envelope longer)} xywh {215 25 25 25} box ROUND_UP_BOX labelsize 10 maximum 127 step 1
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Penvstretch));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Penvstretch));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -705,7 +708,7 @@ freeedit->redraw();}
           label frcR
           callback {env->changepar(EnvelopeParams::c_Pforcedrelease,o->value());}
           tooltip {Forced Relase} xywh {250 30 15 20} down_box DOWN_BOX labelsize 10 align 6
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Pforcedrelease));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Pforcedrelease));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -745,7 +748,7 @@ freeedit->redraw();}
           label {A.val}
           callback {env->changepar(EnvelopeParams::c_PA_val,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -758,7 +761,7 @@ freeedit->redraw();}
           label {A.dt}
           callback {env->changepar(EnvelopeParams::c_PA_dt,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PA_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PA_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -771,7 +774,7 @@ freeedit->redraw();}
           label {R.val}
           callback {env->changepar(EnvelopeParams::c_PR_val,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_val));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_val));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -784,7 +787,7 @@ freeedit->redraw();}
           label {R.dt}
           callback {env->changepar(EnvelopeParams::c_PR_dt,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_PR_dt));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_PR_dt));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -797,7 +800,7 @@ freeedit->redraw();}
           label Stretch
           callback {env->changepar(EnvelopeParams::c_Penvstretch,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Penvstretch));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Penvstretch));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -810,7 +813,7 @@ freeedit->redraw();}
           label frcR
           callback {env->changepar(EnvelopeParams::c_Pforcedrelease,o->value());
 freeedit->redraw();}
-          code0 {o->value(env->getparFloat(EnvelopeParams::c_Pforcedrelease));}
+          code0 {o->value(env->getpar(EnvelopeParams::c_Pforcedrelease));}
           code {o->synth=synth;
             o->controllable = true;
             o->midiCtrl = env;
@@ -877,7 +880,9 @@ freeedit->redraw();}
     code {env=env_;
     
 synth = env->getSynthEngine();
+std::cout << "EnvelopeUI reassignMidi" << endl;
 reassignMidi(env);
+std::cout << "End of EnvelopeUI reassignMidi" << endl;
 make_ADSR_window();
 make_ASR_window();
 make_ADSRfilter_window();

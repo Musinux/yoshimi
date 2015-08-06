@@ -119,7 +119,7 @@ class TipWin {open : {public Fl_Menu_Window, MiscFuncs}
   }
 } 
 
-class WidgetPDial {open : {public Fl_Dial}
+class WidgetPDial {open : {public Fl_Dial, ControllableByMIDIUI}
 } {
   Function {WidgetPDial(int x,int y, int w, int h, const char *label=0):Fl_Dial(x,y,w,h,label)} {open
   } {
@@ -135,10 +135,24 @@ class WidgetPDial {open : {public Fl_Dial}
         controllable = false;} {}
   }
   Function {~WidgetPDial()} {} {
-    code {delete tipwin;} {}
+    code {
+    unassignUIControls();
+    delete tipwin;} {}
+  }
+  Function {refresh()} {} {
+    code {;} {}
   }
   Function {callback(Fl_Callback* cb)} {} {
     code {Fl_Widget::callback(cb);} {}
+  }
+  Function {initMidiControl(SynthEngine *_synth, ControllableByMIDI *_midiCtrl, const int _par, ControllableByMIDIUI *_ui)} {} {
+    code {
+      synth=_synth;
+      controllable = true;
+      midiCtrl = _midiCtrl; 
+      par = _par;
+      ui = _ui;
+    } {}
   }
   Function {handle(int event)} {open return_type int
   } {
@@ -154,18 +168,9 @@ class WidgetPDial {open : {public Fl_Dial}
                 if(Fl::event_button() == FL_RIGHT_MOUSE && Fl::event_shift() != 0) {
                     if(controllable) {
                         Fl_Menu_Item rclick_menu[] = {
-                            { "Reset", 0, reset},
+                            { "Remove control", 0, remove},
                             { "Midi Learn", 0, stampa, (void*)1 },
                             { 0}
-                        };
-                        const Fl_Menu_Item *m = rclick_menu->popup(Fl::event_x(), Fl::event_y(), 0, 0, 0);
-                        if(m){
-                            m->do_callback(this, m->user_data());
-                        }
-                    } else {
-                        Fl_Menu_Item rclick_menu[] = {
-                            { "Reset", 0, reset},
-                            { 0 }
                         };
                         const Fl_Menu_Item *m = rclick_menu->popup(Fl::event_x(), Fl::event_y(), 0, 0, 0);
                         if(m){
@@ -304,7 +309,10 @@ class WidgetPDial {open : {public Fl_Dial}
         cairo_fill(cr);
         //drawing the "light" circle:
         if (active_r()) {
-            cairo_set_source_rgb(cr,0,197.0/255,245.0/255); //light blue
+            if(!controllable)
+                cairo_set_source_rgb(cr,0,197.0/255,245.0/255); //light blue
+            else
+                cairo_set_source_rgb(cr,1,1,0); // yellow
         } else {
             cairo_set_source_rgb(cr,0.6,0.7,0.8);
         }
@@ -348,7 +356,7 @@ class WidgetPDial {open : {public Fl_Dial}
     code {tipwin->setText(c);
         textset = true;} {}
   }
-  Function {reset(Fl_Widget* w, void* v)} {open return_type {static void}
+  Function {remove(Fl_Widget* w, void* v)} {open return_type {static void}
   } {
     code {Fl_Valuator* dial = (Fl_Valuator*)w;
         dial->value((dial->maximum()-dial->minimum())/2);

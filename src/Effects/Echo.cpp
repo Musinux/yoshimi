@@ -192,7 +192,7 @@ void Echo::setpreset(unsigned char npreset)
 }
 
 
-void Echo::changepar(int npar, unsigned char value)
+void Echo::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -221,7 +221,7 @@ void Echo::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Echo::getpar(int npar)
+float Echo::getpar(int npar)
 {
     switch (npar)
     {

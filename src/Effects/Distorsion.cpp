@@ -200,7 +200,7 @@ void Distorsion::setlevel(unsigned char Plevel_){
     Plevel = Plevel_;
 }
 
-void Distorsion::changepar(int npar, unsigned char value)
+void Distorsion::changepar(int npar, float value)
 {
     switch (npar)
     {
@@ -244,7 +244,7 @@ void Distorsion::changepar(int npar, unsigned char value)
 }
 
 
-unsigned char Distorsion::getpar(int npar)
+float Distorsion::getpar(int npar)
 {
     switch (npar)
     {
