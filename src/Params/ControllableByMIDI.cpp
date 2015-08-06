@@ -45,7 +45,6 @@ void midiControl::init()
 
 midiControl::~midiControl()
 {
-    std::cout << "~midiControl" << endl;
     if(controller)
         controller->removeMidiController(this);
 }
@@ -74,25 +73,17 @@ void midiControl::removeUI()
 
 void ControllableByMIDI::removeAllMidiControllers(SynthEngine *synth)
 {
-    if(alreadyDeleting){
-        std::cout << "already deleting (all)" << endl;
-        return;
-    }
-    alreadyDeleting = true;
-    std::cout << "SET already deleting" << endl;
+    if(alreadyDeleting) return;
+    
     if(controllers.size() > 0){
         list<midiControl*>::iterator i;
-        std::cout << "controllers to delete: " << controllers.size() << endl;
         for(i=controllers.begin(); i != controllers.end();){
             synth->removeMidiControl(*i);
-            std::cout << "one deleted" << endl;
             i = controllers.erase(i);
         }
         controllers.clear();
 
     }
-    std::cout << "controllers left: " << controllers.size() << endl;
-    std::cout << std::flush;
     alreadyDeleting = false;
 }
 
@@ -104,7 +95,6 @@ void ControllableByMIDI::reassignUIControls(ControllableByMIDIUI *ctrl)
         for(i=controllers.begin(); i != controllers.end();i++){
             (*i)->ui = ctrl;
         }
-        cout << "ControllableByMIDI::reassignUIControls: controllers :" << controllers.size() << endl;
     }
 }
 
@@ -112,19 +102,11 @@ void ControllableByMIDI::unassignUIControls()
 {
     if(alreadyDeleting) return;
     list<midiControl*>::iterator i;
-    cout <<  "ControllableByMIDI::unassignUIControls" << endl;
-    cout <<  std::flush;
+
     if(controllers.size() > 0){
-        //cout <<  "Removing ui controls (" << controllers.size() << ")" << endl; 
-        //cout <<  std::flush;
-        
         for(i=controllers.begin(); i != controllers.end();i++){
-            /*if((*i)->ui != NULL){
-                (*i)->ui->controller = NULL;
-            }*/
             (*i)->removeUI();
         }
-        std::cout << "size of controllers: " << controllers.size() << endl;
     }
 }
 
@@ -141,15 +123,11 @@ void ControllableByMIDI::addMidiController(midiControl *ctrl)
 
 void ControllableByMIDI::removeMidiController(midiControl *ctrl)
 {
-    if(alreadyDeleting){
-        std::cout << "already deleting" << endl;
-        return;
-    }
+    if(alreadyDeleting) return;
+    
     list<midiControl*>::iterator i;
-    std::cout << "controllers to delete: " << controllers.size() << endl;
     for(i=controllers.begin(); i != controllers.end();i++){
         if((*i) == ctrl){
-            cout << "Deleting reference " << (*i) << endl;
             controllers.erase(i);
             return;
         }
@@ -175,7 +153,6 @@ void ControllableByMIDI::add2XMLMidi(XMLwrapper *xml)
     list<midiControl*>::iterator i;
     int cpt = 0;
     for(i = controllers.begin(); i != controllers.end(); i++){
-        //cout << "Controller writen " << (*i)->channel << " " << (*i)->ccNbr << endl;
         xml->beginbranch("CONTROLLER", cpt);
         xml->addpar("ccNbr", (*i)->ccNbr);
         xml->addpar("channel", (*i)->channel);
@@ -188,6 +165,7 @@ void ControllableByMIDI::add2XMLMidi(XMLwrapper *xml)
     }
     xml->endbranch();
 };
+
 void ControllableByMIDI::getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth)
 {
     if(!xml->enterbranch("MIDI_CONTROLLERS"))
@@ -202,12 +180,12 @@ void ControllableByMIDI::getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth)
         par = xml->getpar("par", -1, 0, 30);
         xml->getparbool("isFloat", 1); // to be compliant with previous version
         if(ccNbr == -1 || channel == -1){
-            cout << "Error on reading ccNbr or channel (" << ccNbr << ", " << channel  << ")" << endl;
+            //synth->getRuntime().Log("Error on reading ccNbr or channel (" + synth->asString(ccNbr) + ", " + synth->asString(channel) + ")");
             cpt++;
             xml->exitbranch();
             continue;
         }
-        cout << "Controller read (" << cpt << ") " << channel << " " << ccNbr << " (" << this << ", " << par << ")" << endl;
+        //synth->getRuntime().Log("Controller read (" + synth->asString(cpt) + ") " + synth->asString(channel) + " " + synth->asString(ccNbr) + " (" << synth->asString((long)this) + ", " + synth->asString(par) + ")");
         synth->addMidiControl(ccNbr, channel, min, max, this, NULL, par, false);
         cpt++;
         xml->exitbranch();

@@ -223,7 +223,6 @@ class EffUI {open : {public Fl_Group,public PresetsUI_, public ControllableByMID
   }
   Function {~EffUI()} {} {
     code {
-        std::cout << "EffUI unassignUIControls" << endl;
         unassignUIControls();
 
         effnullwindow->hide();        // delete (effnullwindow);
@@ -241,7 +240,6 @@ class EffUI {open : {public Fl_Group,public PresetsUI_, public ControllableByMID
             filterwindow->hide();
             delete(filterwindow);
         }
-        std::cout << "EffUI totally deleted." << endl;
         } {}
   }
   Function {make_null_window()} {} {
@@ -1724,8 +1722,6 @@ refresh(eff);}
   } {
     code {eff=eff_;
     synth = _synth;
-    //setController(eff->getefx());
-    std::cout << "EnvelopeUI reassignMidi" << endl;
     reassignMidi(eff);
     make_null_window();
     make_reverb_window();

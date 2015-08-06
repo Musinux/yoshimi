@@ -48,7 +48,6 @@ EffectMgr::~EffectMgr()
 {
     if (efx)
         delete efx;
-    std::cout << "~EffectMgr" << endl;
     removeAllMidiControllers(synth);
     fftwf_free(efxoutl);
     fftwf_free(efxoutr);

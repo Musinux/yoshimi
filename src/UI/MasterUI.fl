@@ -95,7 +95,6 @@ class MasterUI {selected : {private MiscFuncs, public ControllableByMIDIUI}
   Function {MasterUI(SynthEngine *_synth)} {} {
     code {//
       synth = _synth;
-      std::cout << "MasterUI reassignMidi" << endl;
       reassignMidi(_synth);
       presetsui = NULL;
       ninseff = 0;
@@ -116,7 +115,6 @@ class MasterUI {selected : {private MiscFuncs, public ControllableByMIDIUI}
   }
   Function {~MasterUI()} {} {
     code {
-      std::cout << "MasterUI unassignUIControls" << endl;
       unassignUIControls();
       masterwindow->hide();
       aboutwindow->hide();

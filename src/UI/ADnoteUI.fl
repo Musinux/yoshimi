@@ -1359,7 +1359,6 @@ class ADnoteUI {selected : {public PresetsUI_, SynthHelper, ControllableByMIDIUI
   Function {~ADnoteUI()} {return_type virtual
   } {
     code {//
-        std::cout << "ADnoteUI unassignUIControls" << endl;
         unassignUIControls();
         ADnoteVoiceList->hide();
         ADnoteGlobalParameters->hide();

@@ -33,20 +33,12 @@ void ControllableByMIDIUI::reassignMidi(ControllableByMIDI *ctrl)
 
 void ControllableByMIDIUI::unassignUIControls()
 {
-  if(controller != NULL){
-  	std::cout << "unassignUIControls " << controller << endl;
+  if(controller != NULL)
     controller->unassignUIControls();
-  }
 }
 
 void ControllableByMIDIUI::setController(ControllableByMIDI *_controller)
 {
-	if(controller != NULL){
-		std::cout << "***********Changing controller**********" << endl;
-	}
-	else {
-		std::cout << ">>>>>>>>>>>>>>Adding Controller " << _controller << " to UI<<<<<<<<<<<<<<<<<" << endl;
-	}
 	controller = _controller;
 }
 

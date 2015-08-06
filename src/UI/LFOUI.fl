@@ -73,7 +73,6 @@ pars=NULL;} {}
   }
   Function {~LFOUI()} {} {
     code {
-    std::cout << "LFOUI unassignUIControls" << endl;
     unassignUIControls();
     lfoui->hide();
 hide();} {}
@@ -235,7 +234,6 @@ LFOtype->value(pars->PLFOtype);} {}
   } {
     code {pars=lfopars_;
     synth = pars->getSynthEngine();
-    std::cout << "LFOUI reassignMidi" << endl;
     reassignMidi(lfopars_);
     make_window();
     end();

@@ -398,7 +398,8 @@ void SynthEngine::NoteOff(unsigned char chan, unsigned char note)
     Some lists are duplicated elsewhere to help the knobs to move, but EVERY addition or deletion MUST BE DONE HERE.
     The midiControl delete itself the links made with some ControllableByMIDI when deleted.
  */
-void SynthEngine::addMidiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par,  bool recording) {
+void SynthEngine::addMidiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par,  bool recording) 
+{
     list<midiControl*>::iterator i;
     for(i=midiControls.begin(); i != midiControls.end();i++){
         if((*i)->controller == controller && (*i)->par == par){
@@ -416,15 +417,15 @@ void SynthEngine::addMidiControl(int ccNbr, int channel, int min, int max, Contr
     GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
 }
 
-void SynthEngine::addMidiControl(ControllableByMIDI *ctrl, int par, ControllableByMIDIUI *ui) {
+void SynthEngine::addMidiControl(ControllableByMIDI *ctrl, int par, ControllableByMIDIUI *ui)
+{
     addMidiControl(-1, -1, 0, 127, ctrl, ui, par, true);
 }
 
-void SynthEngine::removeMidiControl(midiControl *midiCtrl) {
-    if(alreadyDeletingMidiControls){
-        std::cout << "SyntEngine: already deleting" << endl;
-        return;
-    }
+void SynthEngine::removeMidiControl(midiControl *midiCtrl) 
+{
+    if(alreadyDeletingMidiControls) return;
+
     list<midiControl*>::iterator i;
     for(i=midiControls.begin(); i != midiControls.end();i++){
         if((*i) == midiCtrl){
@@ -437,19 +438,16 @@ void SynthEngine::removeMidiControl(midiControl *midiCtrl) {
     
 }
 
-void SynthEngine::removeAllMidiControls() {
-    if(alreadyDeletingMidiControls){
-        std::cout << "SyntEngine: already deleting" << endl;
-        return;
-    }
+void SynthEngine::removeAllMidiControls() 
+{
+    if(alreadyDeletingMidiControls) return;
     alreadyDeletingMidiControls = true;
     list<midiControl*>::iterator i, j;
     for(i=midiControls.begin(); i != midiControls.end();){
-        cout << "Controllers :" << midiControls.size() << endl;
-        cout << "deleting control "<< (*i)->ccNbr << ", " << (*i)->channel << " | (" << (*i)->controller << "," << (*i)->par << ")" << endl;
+        //cout << "Controllers :" << midiControls.size() << endl;
+        //cout << "deleting control "<< (*i)->ccNbr << ", " << (*i)->channel << " | (" << (*i)->controller << "," << (*i)->par << ")" << endl;
         
         j = midiControls.erase(i);
-        cout << "before delete" << endl;
         delete *i;
         i = j;
     }
@@ -460,12 +458,11 @@ void SynthEngine::removeAllMidiControls() {
 // Controllers
 void SynthEngine::SetController(unsigned char chan, int type, short int par)
 {
-    list<midiControl*>::iterator i;
-    list<midiControl*>::iterator j;
-    cout << "Number of midicontrols " << midiControls.size() << endl;
+    list<midiControl*>::iterator i, j;
+    //cout << "Number of midicontrols " << midiControls.size() << endl;
     bool midiAlreadyTaken;
     bool midiUsed = false;
-    cout << "MIDI:  value:" << type << " chan:" << (int)chan << endl;
+    //cout << "MIDI:  value:" << type << " chan:" << (int)chan << endl;
     for(i=midiControls.begin(); i != midiControls.end();i++){
         if((*i)->recording) {
             midiUsed = true;

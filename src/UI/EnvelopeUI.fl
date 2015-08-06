@@ -242,7 +242,6 @@ envfree=NULL;} {}
   }
   Function {~EnvelopeUI()} {} {
     code {
-    std::cout << "EnvelopeUI unassignUIControls" << endl;
     unassignUIControls();
     envwindow->hide();
 hide();
@@ -880,9 +879,7 @@ freeedit->redraw();}
     code {env=env_;
     
 synth = env->getSynthEngine();
-std::cout << "EnvelopeUI reassignMidi" << endl;
 reassignMidi(env);
-std::cout << "End of EnvelopeUI reassignMidi" << endl;
 make_ADSR_window();
 make_ASR_window();
 make_ADSRfilter_window();

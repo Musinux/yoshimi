@@ -219,7 +219,6 @@ pars=NULL;
   }
   Function {~FilterUI()} {} {
     code {
-        std::cout << "FilterUI unassignUIControls" << endl;
         unassignUIControls();
         filterui->hide();
         formantparswindow->hide();
@@ -665,7 +664,6 @@ pars=NULL;
   } {
     code {pars=filterpars_;
         synth = pars->getSynthEngine();
-        std::cout << "FilterUI reassignMidi" << endl;
         reassignMidi(pars);
         velsnsamp = velsnsamp_;
         velsns = velsns_;
