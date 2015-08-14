@@ -181,11 +181,14 @@ void ControllableByMIDI::getfromXMLMidi(XMLwrapper *xml, SynthEngine *synth)
         xml->getparbool("isFloat", 1); // to be compliant with previous version
         if(ccNbr == -1 || channel == -1){
             //synth->getRuntime().Log("Error on reading ccNbr or channel (" + synth->asString(ccNbr) + ", " + synth->asString(channel) + ")");
+            std::cout << "Error on reading ccNbr or channel (" << ccNbr << ", " << channel << ")" << endl;
             cpt++;
             xml->exitbranch();
             continue;
         }
-        //synth->getRuntime().Log("Controller read (" + synth->asString(cpt) + ") " + synth->asString(channel) + " " + synth->asString(ccNbr) + " (" << synth->asString((long)this) + ", " + synth->asString(par) + ")");
+        //synth->getRuntime().Log("Controller read (" + synth->asString(cpt) + ") " + synth->asString(channel) + " " + synth->asString(ccNbr) + " (" + synth->asString((long)this) + ", " + synth->asString(par) + ")");
+        std::cout << "Controller read (" << cpt << ") " << channel << " " << ccNbr << " (" << this << ", " << par << ")" << endl;
+
         synth->addMidiControl(ccNbr, channel, min, max, this, NULL, par, false);
         cpt++;
         xml->exitbranch();

@@ -26,13 +26,13 @@
 
 #include <iostream>
 class ControllableByMIDI;
-
+class SynthEngine;
 class ControllableByMIDIUI {
 public:
   
 	virtual void refresh() = 0;
 	void reassignMidi(ControllableByMIDI *ctrl);
-	void unassignUIControls();
+	void unassignUIControls(SynthEngine *synth);
 	void setController(ControllableByMIDI *_controller);
 	ControllableByMIDIUI();
 	virtual ~ControllableByMIDIUI() {}

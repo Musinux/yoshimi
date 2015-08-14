@@ -219,7 +219,7 @@ pars=NULL;
   }
   Function {~FilterUI()} {} {
     code {
-        unassignUIControls();
+        unassignUIControls(synth);
         filterui->hide();
         formantparswindow->hide();
         hide();

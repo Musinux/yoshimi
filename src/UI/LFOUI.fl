@@ -73,7 +73,7 @@ pars=NULL;} {}
   }
   Function {~LFOUI()} {} {
     code {
-    unassignUIControls();
+    unassignUIControls(synth);
     lfoui->hide();
 hide();} {}
   }

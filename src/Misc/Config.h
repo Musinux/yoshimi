@@ -221,14 +221,14 @@ public:
     unsigned long length; //length of data member (determined by type member, can be set to 0, if data is known struct/class)
     unsigned int index; // if there is integer data, it can be passed through index (to remove aditional receiver logic)
     unsigned int type; // type of gui message (see enum above)
-    ControllableByMIDIUI *ui;
-    static void sendMessage(void *_data, unsigned int _type, unsigned int _index, ControllableByMIDIUI *ui = NULL)
+    //ControllableByMIDIUI *ui;
+    static void sendMessage(void *_data, unsigned int _type, unsigned int _index)//, ControllableByMIDIUI *ui = NULL)
     {
         GuiThreadMsg *msg = new GuiThreadMsg;
         msg->data = _data;
         msg->type = _type;
         msg->index = _index;
-        msg->ui = ui; // UI can be null
+        //msg->ui = ui; // UI can be null
         Fl::awake((void *)msg);
     }
     static void processGuiMessages();

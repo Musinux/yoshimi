@@ -1341,24 +1341,32 @@ else {propta->deactivate();proptb->deactivate();}}
   }
   Function {~PartUI()} {} {
     code {
-        std::cout << "PartUI unassignUIControls" << endl;
-        unassignUIControls();
+        std::cout << "unassignUICOntrols PartUI" << endl;
+        unassignUIControls(synth);
+        std::cout << "unassignUICOntrols PartUI done" << endl;
         if (adnoteui)
             delete adnoteui;
+        std::cout << "delete adnoteui" << endl;
         if (subnoteui)
             delete subnoteui;
+        std::cout << "delete subnoteui" << endl;
         if (padnoteui)
             delete padnoteui;
+        std::cout << "delete padnoteui" << endl;
         partgroup->hide();
         // delete(partgroup);
         ctlwindow->hide();
         delete ctlwindow;
+        std::cout << "delete ctlwindow" << endl;
         partfx->hide();
         delete partfx;
+        std::cout << "delete partfx" << endl;
         instrumentkitlist->hide();
         delete instrumentkitlist;
+        std::cout << "delete instrumentkitlist" << endl;
         instrumenteditwindow->hide();
-        delete instrumenteditwindow;} {}
+        delete instrumenteditwindow;
+        std::cout << "~PartUI done" << endl;} {}
   }
   Function {refresh()} {} {
     code {

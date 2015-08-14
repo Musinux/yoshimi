@@ -32,6 +32,7 @@ using namespace std;
 
 #include "MasterUI.h"
 #include "Misc/SynthEngine.h"
+#include "Misc/ControllableByMIDIUI.h"
 #include "Misc/Config.h"
 #include <iostream>
 #include <list>
@@ -84,6 +85,7 @@ SynthEngine::SynthEngine(int argc, char **argv, bool _isLV2Plugin, unsigned int 
     p_buffersize(0),
     p_bufferbytes(0),
     p_buffersize_f(0),
+    //uiToRefreshSent(false),
     ctl(NULL),
     microtonal(this),    
     fft(NULL),    
@@ -455,6 +457,47 @@ void SynthEngine::removeAllMidiControls()
     alreadyDeletingMidiControls = false;
 }
 
+void SynthEngine::addUIToRefresh(ControllableByMIDIUI* ui)
+{
+    //std::cout << "addUIToRefresh" << endl;
+    //uiToRefreshSent = true;
+    uiToRefresh.push_front(ui);
+}
+
+void SynthEngine::removeUIToRefresh(ControllableByMIDIUI* ui)
+{
+    //std::cout << "removeUIToRefresh (" << ui << ")" << endl;
+    //if(!uiToRefreshSent) return;
+    list<ControllableByMIDIUI*>::iterator i;
+    /*
+    std::cout << "uiToRefresh size: " << uiToRefresh.size() << std::flush;
+    if(uiToRefresh.size() < 1) return;
+    */
+    
+    for(i=uiToRefresh.begin(); i != uiToRefresh.end();){
+        if((*i) == ui){
+            //std::cout << "erase !" << endl;
+            i = uiToRefresh.erase(i);
+        }
+        else {
+            i++;
+        }
+    }
+    //if(uiToRefresh.size() == 0) uiToRefreshSent = false;
+}
+
+void SynthEngine::refreshUI()
+{
+    //std::cout << "refreshUI" << endl;
+    list<ControllableByMIDIUI*>::const_iterator i;
+    
+    for(i=uiToRefresh.begin(); i != uiToRefresh.end();){
+        (*i)->refresh();
+    }
+    uiToRefresh.clear();
+    //uiToRefreshSent = false;
+}
+
 // Controllers
 void SynthEngine::SetController(unsigned char chan, int type, short int par)
 {
@@ -486,8 +529,10 @@ void SynthEngine::SetController(unsigned char chan, int type, short int par)
             //cout << "Recognized" << endl;
             (*i)->changepar(par);
             GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateMidiControllers, 0);
-            if((*i)->ui)
-                GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateUIWindow, 0, (*i)->ui);
+            if((*i)->ui){
+                GuiThreadMsg::sendMessage(this, GuiThreadMsg::UpdateUIWindow, 0);
+                addUIToRefresh((*i)->ui);
+            }
             
         }
     }
@@ -1153,7 +1198,8 @@ int SynthEngine::loadParameters(string fname)
         if (Runtime.SimpleCheck)
             result = 3;
     }
-    // << "Loading from XML done." << endl;
+
+    std::cout << "Loading from XML done." << endl;
     actionLock(unlock);
     return result;
 }

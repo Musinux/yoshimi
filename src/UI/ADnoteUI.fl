@@ -1359,7 +1359,7 @@ class ADnoteUI {selected : {public PresetsUI_, SynthHelper, ControllableByMIDIUI
   Function {~ADnoteUI()} {return_type virtual
   } {
     code {//
-        unassignUIControls();
+        unassignUIControls(synth);
         ADnoteVoiceList->hide();
         ADnoteGlobalParameters->hide();
         ADnoteVoice->hide();

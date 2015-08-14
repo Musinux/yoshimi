@@ -2,6 +2,7 @@
 
 #include "Misc/ControllableByMIDIUI.h"
 #include "Params/ControllableByMIDI.h"
+#include "Misc/SynthEngine.h"
 #include <iostream>
 // ControllableByMIDIUI.cc
 // Original ZynAddSubFX author Nasca Octavian Paul
@@ -31,10 +32,11 @@ void ControllableByMIDIUI::reassignMidi(ControllableByMIDI *ctrl)
 		controller->reassignUIControls(this);
 }
 
-void ControllableByMIDIUI::unassignUIControls()
+void ControllableByMIDIUI::unassignUIControls(SynthEngine *synth)
 {
-  if(controller != NULL)
-    controller->unassignUIControls();
+	if(controller != NULL)
+		controller->unassignUIControls();
+	synth->removeUIToRefresh(this);
 }
 
 void ControllableByMIDIUI::setController(ControllableByMIDI *_controller)

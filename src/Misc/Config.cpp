@@ -1129,25 +1129,20 @@ void GuiThreadMsg::processGuiMessages()
             break;
         case GuiThreadMsg::UpdateMidiControllers:
         {
-            // << "Sending Refresh signal" << endl;
+            std::cout << "Sending Refresh signal" << endl;
             SynthEngine *synth = ((SynthEngine *)msg->data);
             MidiCCWindow *win = synth->getMidiCCWindow();
             if(win)
             {
-
                 win->refresh();
             }
         }
             break;
         case GuiThreadMsg::UpdateUIWindow:
         {
-            if(msg->ui != NULL){
-                // << "Refreshing some ui... ";
-                // << std::flush;
-                msg->ui->refresh();
-                // << "Done." << endl;
-                // << std::flush;
-            }
+            SynthEngine *synth = ((SynthEngine *)msg->data);
+            std::cout << "send refreshUI()" << endl;
+            synth->refreshUI();
         }
             break;
         case GuiThreadMsg::UpdatePanel:

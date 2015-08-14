@@ -136,7 +136,7 @@ class WidgetPDial {open : {public Fl_Dial, ControllableByMIDIUI}
   }
   Function {~WidgetPDial()} {} {
     code {
-    unassignUIControls();
+    unassignUIControls(synth);
     delete tipwin;} {}
   }
   Function {refresh()} {} {

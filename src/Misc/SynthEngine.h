@@ -58,6 +58,7 @@ class SynthEngine : private SynthHelper, MiscFuncs, public ControllableByMIDI
         Bank bank;
         Config Runtime;
         PresetsStore presetsstore;
+        
     public:
         SynthEngine(int argc, char **argv, bool _isLV2Plugin = false, unsigned int forceId = 0);
         ~SynthEngine();
@@ -134,12 +135,19 @@ class SynthEngine : private SynthHelper, MiscFuncs, public ControllableByMIDI
 
 
         list<midiControl*> midiControls;
+    private:
+        list<ControllableByMIDIUI*> uiToRefresh;
+        //bool uiToRefreshSent;
 
     public:
         void addMidiControl(ControllableByMIDI *ctrl, int par, ControllableByMIDIUI *ui);
         void addMidiControl(int ccNbr, int channel, int min, int max, ControllableByMIDI *controller, ControllableByMIDIUI *ui, int par, bool recording);
         void removeMidiControl(midiControl *midiCtrl);
         void removeAllMidiControls();
+
+        void addUIToRefresh(ControllableByMIDIUI* ui);
+        void removeUIToRefresh(ControllableByMIDIUI* ui);
+        void refreshUI();
 
         float getpar(int npar);
         void changepar(int npar, float value);

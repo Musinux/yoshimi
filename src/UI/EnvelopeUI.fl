@@ -242,7 +242,7 @@ envfree=NULL;} {}
   }
   Function {~EnvelopeUI()} {} {
     code {
-    unassignUIControls();
+    unassignUIControls(synth);
     envwindow->hide();
 hide();
 freemodeeditwindow->hide();
